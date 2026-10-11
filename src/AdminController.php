@@ -37,16 +37,8 @@ final readonly class AdminController
 
                 return $this->json($this->document($store, $records, $type, $id));
             }
-            $query = $request->getQueryParams();
-            $type = is_string($query['type'] ?? null) ? $query['type'] : 'page';
-            $search = is_string($query['q'] ?? null) ? $query['q'] : '';
-            if (mb_strlen($search) > 200) {
-                throw new \InvalidArgumentException('Търсенето е до 200 символа.', 422);
-            }
-            $documents = in_array($type, ComposerStore::TYPES, true) ? $store->summaries($type) : [];
-            $rows = array_map(static fn(array $row): array => $row + ['composer_updated_at' => $documents[$row['id']]['updated_at'] ?? null], $records->list($type, $search));
 
-            return $this->json(['types' => $records->types(), 'records' => array_slice($rows, 0, 200)]);
+            return $this->json(['error' => ['message' => 'Не е намерено.']], 404);
         } catch (\InvalidArgumentException $error) {
             $status = $error->getCode() >= 400 && $error->getCode() < 500 ? $error->getCode() : 422;
 

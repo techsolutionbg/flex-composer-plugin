@@ -38,35 +38,6 @@ final class ComposerRecords
         return $this->commerceActive;
     }
 
-    /** @return list<string> Record types available right now. */
-    public function types(): array
-    {
-        return $this->commerceActive() ? ['page', 'product'] : ['page'];
-    }
-
-    /** @return list<array{id: int, title: string, status: string, updated_at: string|null}> */
-    public function list(string $type, string $search = ''): array
-    {
-        $this->assertAvailable($type);
-        $needle = mb_strtolower(trim($search));
-        $rows = [];
-        if ($type === 'page') {
-            foreach ($this->repository->all() as $page) {
-                $rows[] = ['id' => (int) $page->getKey(), 'title' => (string) $page->getAttribute('title'), 'status' => (string) $page->getAttribute('status'), 'updated_at' => Time::iso($page->getAttribute('updated_at'))];
-            }
-        } else {
-            foreach ((new \Flex\Commerce\CatalogStore())->index('products', 'active') as $product) {
-                $rows[] = ['id' => (int) $product['id'], 'title' => (string) $product['name'], 'status' => (string) $product['status'], 'updated_at' => Time::iso($product['updated_at'] ?? null)];
-            }
-        }
-        if ($needle !== '') {
-            $rows = array_values(array_filter($rows, static fn(array $row): bool => str_contains(mb_strtolower($row['title']), $needle)));
-        }
-        usort($rows, static fn(array $left, array $right): int => strcmp((string) $right['updated_at'], (string) $left['updated_at']));
-
-        return $rows;
-    }
-
     /** @return array{id: int, type: string, title: string, status: string, html: string, url: string|null, updated_at: string|null} */
     public function get(string $type, int $id): array
     {

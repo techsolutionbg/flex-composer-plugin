@@ -174,39 +174,6 @@
   margin-top: 1rem;
 }
 
-.composer-page .composer-chooser-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.composer-page .composer-chooser-toolbar input[type="search"] {
-  min-width: min(20rem, 100%);
-}
-
-.composer-page .composer-type-switch {
-  display: inline-flex;
-  gap: 0.35rem;
-}
-
-.composer-page .composer-link-button {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  font-weight: 650;
-  text-align: left;
-  cursor: pointer;
-}
-
-.composer-page .composer-link-button:hover,
-.composer-page .composer-link-button:focus-visible {
-  color: var(--accent, #e95d45);
-  text-decoration: underline;
-}
-
 @media (max-width: 720px) {
   .composer-page .react-page-heading {
     flex-direction: column;

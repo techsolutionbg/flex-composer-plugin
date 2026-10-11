@@ -32,15 +32,16 @@ final class ComposerPlugin implements PluginInterface, BootablePluginInterface, 
 
     public function boot(PluginContext $context): void
     {
-        $context->routes?->admin('GET', '/records', AdminController::class, 'records');
         foreach (ComposerStore::TYPES as $type) {
             $context->routes?->admin(['GET', 'PUT'], '/documents/' . $type . '/{id:number}', AdminController::class, 'document-' . $type);
             $context->routes?->admin('POST', '/documents/' . $type . '/{id:number}/restore', AdminController::class, 'restore-' . $type);
         }
         $context->routes?->admin(['GET', 'PUT'], '/settings', AdminController::class, 'settings');
 
-        // The editor is a separate admin page; the pages and products lists open it for a record.
-        $context->admin?->page('editor', 'Composer', 'assets/admin.js', false, ['group' => 'content', 'icon' => 'file-text']);
+        // The editor is a separate admin screen per record type, left out of the sidebar: the actions menu of
+        // the pages and products lists opens it at /extension-pages/flex-composer-{type}/{id}/edit.
+        $context->admin?->page('page', 'Composer', 'assets/admin.js', false, ['group' => 'content', 'icon' => 'file-text', 'hidden' => true]);
+        $context->admin?->page('product', 'Composer', 'assets/admin.js', false, ['group' => 'commerce', 'icon' => 'file-text', 'hidden' => true]);
         $context->admin?->extend('pages.list', 'table.row-action', 'open-page', 'assets/admin.js', ['export' => 'createPageAction']);
         $context->admin?->extend('commerce.products.list', 'table.row-action', 'open-product', 'assets/admin.js', ['export' => 'createProductAction']);
 

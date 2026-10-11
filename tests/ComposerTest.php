@@ -83,7 +83,6 @@ final class ComposerTest extends TestCase
         $this->assertSame(2, $again['version']);
         $this->assertSame('Б', $again['document'][0]['content'][0]['text']);
         $this->assertSame(self::ORIGINAL, $this->store->sourceHtml('page', 1), 'the source is kept from the first save only');
-        $this->assertSame([1], array_keys($this->store->summaries('page')));
         $this->store->delete('page', 1);
         $this->assertNull($this->store->get('page', 1));
     }
@@ -196,19 +195,12 @@ final class ComposerTest extends TestCase
 
     public function testProductsNeedFlexCommerce(): void
     {
-        $this->assertSame(['page'], $this->records->types());
         try {
             $this->records->get('product', 1);
             $this->fail('Products must not load without Flex Commerce.');
         } catch (\InvalidArgumentException $error) {
             $this->assertSame(409, $error->getCode());
         }
-    }
-
-    public function testListSearchesTitles(): void
-    {
-        $this->assertSame(['Начало'], array_column($this->records->list('page', 'нач'), 'title'));
-        $this->assertCount(2, $this->records->list('page'));
     }
 
     public function testUninstallKeepsDataUnlessRequested(): void

@@ -1,20 +1,21 @@
-// Flex Composer in the admin: the record chooser, the editor screen and "Отвори в Composer" in the lists of
-// pages and products. The block editor itself is composer.js, loaded only when the editor screen opens.
+// Flex Composer in the admin: the editor screen and "Отвори в Composer" in the actions menu of pages and
+// Flex Commerce products. The screens are hidden admin pages, opened only from those actions. The block
+// editor itself is composer.js, loaded only when the editor screen opens.
 export const BASE = '/admin/plugins/flex/composer';
-export const PAGE = '/extension-pages/flex-composer-editor';
 export const TYPES = {
   page: {label: 'Страници', one: 'страницата', saved: 'Страницата е записана.', list: '/pages', edit: (id) => '/pages/' + id + '/edit'},
   product: {label: 'Продукти', one: 'продукта', saved: 'Продуктът е записан.', list: '/extension-pages/flex-commerce-products', edit: (id) => '/extension-pages/flex-commerce-products/' + id + '/edit'},
 };
 export const CONFLICT = 'Записът е променен на друго място';
 
+/** The admin opens plugin pages only at /extension-pages/{page}, /create and /{id}/edit. */
 export function editorPath(type, id) {
-  return PAGE + '/' + type + '/' + id;
+  return '/extension-pages/flex-composer-' + type + '/' + id + '/edit';
 }
 
-/** The sub-path of the Composer page: "" (chooser), or the record being edited. */
+/** The record of a Composer page address, or null. */
 export function parsePath(path) {
-  const match = /^\/?(page|product)\/([1-9][0-9]{0,9})\/?$/.exec(String(path ?? '').replace(/^\/extension-pages\/flex-composer-editor/, ''));
+  const match = /^\/extension-pages\/flex-composer-(page|product)\/([1-9][0-9]{0,9})\/edit$/.exec(String(path ?? ''));
   return match ? {type: match[1], id: Number(match[2])} : null;
 }
 
@@ -66,66 +67,6 @@ export function createPage(host) {
 
   function Failure({message}) {
     return message ? h('div', {className: 'react-form-error', role: 'alert'}, message) : null;
-  }
-
-  function Chooser({navigate}) {
-    const [types, setTypes] = React.useState(['page']);
-    const [type, setType] = React.useState('page');
-    const [search, setSearch] = React.useState('');
-    const [rows, setRows] = React.useState([]);
-    const [loading, setLoading] = React.useState(true);
-    const [failure, setFailure] = React.useState('');
-    React.useEffect(() => {
-      const abort = new AbortController();
-      const timer = setTimeout(() => {
-        setLoading(true);
-        request(BASE + '/records?type=' + type + '&q=' + encodeURIComponent(search.trim()), 'GET', undefined, abort.signal)
-          .then((result) => {
-            setTypes(result.types ?? ['page']);
-            setRows(result.records ?? []);
-            setFailure('');
-          })
-          .catch((error) => {
-            if (!abort.signal.aborted) setFailure(error.message);
-          })
-          .finally(() => {
-            if (!abort.signal.aborted) setLoading(false);
-          });
-      }, search ? 250 : 0);
-      return () => {
-        clearTimeout(timer);
-        abort.abort();
-      };
-    }, [type, search]);
-    const open = (row) => navigate(editorPath(type, row.id));
-    return h(React.Fragment, null,
-      h(Heading, {title: 'Composer', crumbs: [{label: 'Composer'}], navigate}),
-      h('p', {className: 'composer-intro'}, 'Изберете запис, който да редактирате с блоковия редактор. Нови страници и продукти се създават от обичайните им екрани; Composer редактира съществуващи.'),
-      h(Failure, {message: failure}),
-      h(C.DataTable, {
-        data: rows,
-        loading,
-        rowKey: (row) => row.id,
-        emptyMessage: search ? 'Няма записи, които отговарят на търсенето.' : 'Няма записи.',
-        filterStorageKey: 'flex-composer-chooser',
-        toolbar: h('div', {className: 'composer-chooser-toolbar'},
-          types.length > 1 ? h('div', {className: 'composer-type-switch', role: 'group', 'aria-label': 'Вид запис'},
-            types.map((value) => h(C.Button, {
-              key: value,
-              type: 'button',
-              variant: value === type ? 'primary' : 'secondary',
-              'aria-pressed': value === type,
-              onClick: () => setType(value),
-            }, TYPES[value].label))) : null,
-          h(C.Input, {type: 'search', value: search, placeholder: 'Търсене по заглавие', 'aria-label': 'Търсене по заглавие', onChange: (event) => setSearch(event.target.value)})),
-        columns: [
-          {key: 'title', label: 'Заглавие', sortable: true, sortValue: (row) => row.title.toLowerCase(), render: (row) => h('button', {type: 'button', className: 'composer-link-button', onClick: () => open(row)}, row.title || '(без заглавие)')},
-          {key: 'status', label: 'Статус', sortable: true, render: (row) => statusLabel(row.status)},
-          {key: 'updated_at', label: 'Променен', sortable: true, sortValue: (row) => host.time?.parse(row.updated_at)?.valueOf() ?? 0, render: (row) => row.updated_at ? h(C.DateTime, {value: row.updated_at}) : '—'},
-          {key: 'composer', label: 'В Composer', render: (row) => row.composer_updated_at ? h(C.DateTime, {value: row.composer_updated_at}) : '—'},
-          {key: 'actions', label: 'Действия', render: (row) => h(C.Button, {type: 'button', variant: 'secondary', onClick: () => open(row)}, 'Отвори')},
-        ],
-      }));
   }
 
   function Editor({type, id, navigate}) {
@@ -248,7 +189,7 @@ export function createPage(host) {
       h(Heading, {
         title,
         navigate,
-        crumbs: [{label: 'Composer', onClick: () => navigate(PAGE)}, {label: meta.label, onClick: () => navigate(meta.list)}, {label: title}],
+        crumbs: [{label: meta.label, onClick: () => navigate(meta.list)}, {label: title}, {label: 'Composer'}],
       },
       data?.record.url ? h('a', {className: 'react-action-button composer-secondary', href: data.record.url, target: '_blank', rel: 'noopener'}, 'Виж на сайта') : null,
       h(C.Button, {type: 'button', variant: 'secondary', onClick: () => navigate(meta.edit(id))}, 'Класически редактор'),
@@ -298,16 +239,18 @@ export function createPage(host) {
       }));
   }
 
-  // The admin does not load plugin stylesheets itself; composer.css holds the editor and these screens.
+  // The admin does not load plugin stylesheets itself; composer.css holds the editor and its screen.
   const stylesheet = new URL('./composer.css', import.meta.url).pathname;
   return function ComposerPage({path, navigate}) {
     const target = parsePath(path);
     return h('div', {className: 'composer-page'},
       h('link', {rel: 'stylesheet', href: stylesheet}),
-      target ? h(Editor, {key: target.type + target.id, type: target.type, id: target.id, navigate}) : h(Chooser, {navigate}));
+      target
+        ? h(Editor, {key: target.type + target.id, type: target.type, id: target.id, navigate})
+        : h(React.Fragment, null,
+          h(Heading, {title: 'Composer', crumbs: [{label: 'Composer'}], navigate}),
+          h('p', {className: 'composer-intro'}, 'Отворете страница или продукт от „Действия“ → „Отвори в Composer“ в списъка им.'),
+          h('div', null,
+            h(C.Button, {type: 'button', variant: 'secondary', onClick: () => navigate('/pages')}, 'Към страниците'))));
   };
-}
-
-function statusLabel(status) {
-  return {published: 'Публикувана', draft: 'Чернова', active: 'Активен', inactive: 'Неактивен', archived: 'Архивиран'}[status] ?? status;
 }

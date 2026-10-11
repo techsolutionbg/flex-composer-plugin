@@ -149,18 +149,6 @@ final class ComposerStore
         $this->db->table('flex_composer_documents')->where('object_type', $type)->where('object_id', $id)->delete();
     }
 
-    /** @return array<int, array{updated_at: string|null}> Documents of a type, keyed by record ID. */
-    public function summaries(string $type): array
-    {
-        $this->assertType($type);
-        $result = [];
-        foreach ($this->db->table('flex_composer_documents')->where('object_type', $type)->get(['object_id', 'updated_at']) as $row) {
-            $result[(int) $row->object_id] = ['updated_at' => Time::iso($row->updated_at)];
-        }
-
-        return $result;
-    }
-
     /** Hash of record HTML, normalized for line endings so a CRLF round trip is not a change. */
     public static function hash(string $html): string
     {
