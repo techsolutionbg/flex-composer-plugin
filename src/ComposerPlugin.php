@@ -1,0 +1,58 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Flex\Composer;
+
+use Flex\Extension\V1\{BootablePluginInterface, EventNames, ExtensionEventInterface, PageEvent, PluginContext, PluginInterface, UninstallablePluginInterface, UpdatablePluginInterface};
+
+final class ComposerPlugin implements PluginInterface, BootablePluginInterface, UpdatablePluginInterface, UninstallablePluginInterface
+{
+    public function install(PluginContext $context): void
+    {
+        (new ComposerStore())->install();
+    }
+
+    public function activate(PluginContext $context): void
+    {
+        $this->install($context);
+    }
+
+    public function update(PluginContext $context, string $fromVersion): void
+    {
+        $this->install($context);
+    }
+
+    public function deactivate(PluginContext $context): void {}
+
+    public function uninstall(PluginContext $context): void
+    {
+        (new ComposerStore())->uninstall();
+    }
+
+    public function boot(PluginContext $context): void
+    {
+        $context->routes?->admin('GET', '/records', AdminController::class, 'records');
+        foreach (ComposerStore::TYPES as $type) {
+            $context->routes?->admin(['GET', 'PUT'], '/documents/' . $type . '/{id:number}', AdminController::class, 'document-' . $type);
+            $context->routes?->admin('POST', '/documents/' . $type . '/{id:number}/restore', AdminController::class, 'restore-' . $type);
+        }
+        $context->routes?->admin(['GET', 'PUT'], '/settings', AdminController::class, 'settings');
+
+        // The editor is a separate admin page; the pages and products lists open it for a record.
+        $context->admin?->page('editor', 'Composer', 'assets/admin.js', false, ['group' => 'content', 'icon' => 'file-text']);
+        $context->admin?->extend('pages.list', 'table.row-action', 'open-page', 'assets/admin.js', ['export' => 'createPageAction']);
+        $context->admin?->extend('commerce.products.list', 'table.row-action', 'open-product', 'assets/admin.js', ['export' => 'createProductAction']);
+
+        $context->api->listen(EventNames::PAGE_DELETED, static function (ExtensionEventInterface $event): void {
+            if ($event instanceof PageEvent && is_int($event->page['id'] ?? null)) {
+                (new ComposerStore())->delete('page', $event->page['id']);
+            }
+        });
+        $context->api->addAction('commerce.catalog.deleted', static function (array $deleted): void {
+            if (($deleted['kind'] ?? null) === 'product' && is_int($deleted['id'] ?? null)) {
+                (new ComposerStore())->delete('product', $deleted['id']);
+            }
+        });
+    }
+}

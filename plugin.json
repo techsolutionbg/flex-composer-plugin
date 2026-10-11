@@ -1,0 +1,38 @@
+{
+  "id": "flex/composer",
+  "name": "Flex Composer",
+  "version": "0.1.0",
+  "description": "Блоков визуален редактор за страници и продукти на Flex Commerce, на отделен екран, паралелно с класическия редактор.",
+  "minimum_platform_version": "0.1.60",
+  "entrypoint": "Flex\\Composer\\ComposerPlugin",
+  "autoload": {
+    "Flex\\Composer\\": "src/"
+  },
+  "permissions": [
+    "admin.ui",
+    "events.listen",
+    "routes.admin",
+    "frontend.assets"
+  ],
+  "frontend": {
+    "scripts": [
+      "assets/admin.js",
+      "assets/composer.js"
+    ],
+    "styles": [
+      "assets/composer.css"
+    ],
+    "public": {
+      "styles": [
+        "assets/content.css"
+      ]
+    }
+  },
+  "metadata": {
+    "status": "stable",
+    "storage": "database",
+    "optional": [
+      "flex/commerce"
+    ]
+  }
+}

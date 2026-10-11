@@ -1,0 +1,16 @@
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.env
+.env.*
+!.env.example
+vendor/
+node_modules/
+.phpunit.cache/
+.phpunit.result.cache
+.php-cs-fixer.cache
+*.log
+/data/*.json
+/data/*.json.migrated
+/app/tests/fixtures/local-records.json

@@ -1,0 +1,222 @@
+/* Composer follows the admin theme: BlockNote's colours come from the admin tokens, light and dark alike. */
+.composer-root .bn-container[data-color-scheme] {
+  --bn-font-family: inherit;
+  --bn-border-radius: 0.5rem;
+  --bn-colors-editor-text: var(--text-primary, #172118);
+  --bn-colors-editor-background: var(--surface, #fff);
+  --bn-colors-menu-text: var(--text-primary, #172118);
+  --bn-colors-menu-background: var(--surface-raised, #fff);
+  --bn-colors-tooltip-text: var(--text-primary, #172118);
+  --bn-colors-tooltip-background: var(--surface-subtle, #f8faf7);
+  --bn-colors-hovered-text: var(--text-primary, #172118);
+  --bn-colors-hovered-background: var(--surface-hover, #eef2ed);
+  --bn-colors-selected-text: var(--primary-text, #fff);
+  --bn-colors-selected-background: var(--primary-bg, #203b29);
+  --bn-colors-disabled-text: var(--text-disabled, #7b877e);
+  --bn-colors-disabled-background: var(--surface-subtle, #f8faf7);
+  --bn-colors-shadow: var(--border, #d4dcd3);
+  --bn-colors-border: var(--border, #d4dcd3);
+  --bn-colors-side-menu: var(--text-muted, #68776b);
+  font-family: inherit;
+}
+
+.composer-root .composer-view .bn-editor {
+  min-height: 60vh;
+  padding: 1.25rem 1rem 3rem 3.25rem;
+  border-radius: 0.6rem;
+}
+
+.composer-root .composer-view .bn-editor:focus-visible {
+  outline: 2px solid var(--focus-ring, #a83b26);
+  outline-offset: 2px;
+}
+
+.composer-root .bn-inline-content a {
+  color: var(--accent, #e95d45);
+}
+
+/* Embed and HTML blocks */
+.composer-card {
+  width: 100%;
+  margin: 0.25rem 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px dashed var(--border-strong, #b9c6ba);
+  border-radius: 0.5rem;
+  background: var(--surface-subtle, #f8faf7);
+  color: var(--text-primary, #172118);
+}
+
+.composer-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+
+.composer-card-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-secondary, #46554a);
+}
+
+.composer-embed .composer-card-label {
+  margin-bottom: 0.4rem;
+}
+
+.composer-card-input,
+.composer-card-code {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--control-border, #c7d1c7);
+  border-radius: 0.4rem;
+  background: var(--control-bg, #fff);
+  color: var(--control-text, #172118);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem;
+}
+
+.composer-card-code {
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.composer-card-input[aria-invalid="true"] {
+  border-color: var(--danger-action-bg, #a83325);
+}
+
+.composer-card-hint {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-muted, #68776b);
+}
+
+.composer-card-toggle {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--control-border, #c7d1c7);
+  border-radius: 0.4rem;
+  background: var(--control-bg, #fff);
+  color: var(--control-text, #172118);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.composer-card-toggle:hover {
+  background: var(--surface-hover, #eef2ed);
+}
+
+.composer-html-preview {
+  width: 100%;
+  min-height: 8rem;
+  border: 1px solid var(--border, #d4dcd3);
+  border-radius: 0.4rem;
+  background: #fff;
+}
+
+/* The Composer screens in the admin */
+.composer-page .composer-heading-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.composer-page a.composer-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--control-border, #c7d1c7);
+  border-radius: 0.5rem;
+  background: var(--control-bg, #fff);
+  color: var(--control-text, #172118);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.composer-page a.composer-secondary:hover {
+  background: var(--surface-hover, #eef2ed);
+}
+
+.composer-page .composer-intro {
+  margin: -0.75rem 0 1.25rem;
+  color: var(--text-secondary, #46554a);
+}
+
+.composer-page .composer-notice {
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border, #d4dcd3);
+  border-left: 4px solid var(--section-expanded-border, #829b86);
+  border-radius: 0.5rem;
+  background: var(--surface-subtle, #f8faf7);
+  color: var(--text-primary, #172118);
+}
+
+.composer-page .composer-surface {
+  border: 1px solid var(--border, #d4dcd3);
+  border-radius: var(--section-radius, 0.7rem);
+  background: var(--surface, #fff);
+}
+
+.composer-page .composer-surface.composer-product .bn-editor {
+  min-height: 40vh;
+}
+
+.composer-page .composer-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.composer-page .composer-chooser-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.composer-page .composer-chooser-toolbar input[type="search"] {
+  min-width: min(20rem, 100%);
+}
+
+.composer-page .composer-type-switch {
+  display: inline-flex;
+  gap: 0.35rem;
+}
+
+.composer-page .composer-link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.composer-page .composer-link-button:hover,
+.composer-page .composer-link-button:focus-visible {
+  color: var(--accent, #e95d45);
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .composer-page .react-page-heading {
+    flex-direction: column;
+  }
+
+  .composer-page .composer-heading-actions {
+    justify-content: flex-start;
+  }
+
+  .composer-root .composer-view .bn-editor {
+    padding-left: 2.25rem;
+  }
+}

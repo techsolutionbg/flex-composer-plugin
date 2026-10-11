@@ -1,0 +1,44 @@
+/* Flex Composer on the public site: only markup that Composer writes and themes do not usually style. */
+li:has(> input[type="checkbox"]:first-child) {
+  list-style: none;
+}
+
+li:has(> input[type="checkbox"]:first-child) > input[type="checkbox"] {
+  margin: 0 0.5em 0 -1.4em;
+  pointer-events: none;
+}
+
+figure:has(> img + figcaption),
+figure:has(> video + figcaption) {
+  max-width: 100%;
+  margin: 1.5em 0;
+}
+
+figure:has(> img + figcaption) > img,
+figure:has(> video + figcaption) > video {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+figure > figcaption {
+  margin-top: 0.5em;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+table:has(> tbody > tr > td > p, > tbody > tr > th > p) {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table:has(> tbody > tr > td > p, > tbody > tr > th > p) :is(td, th) {
+  padding: 0.5em 0.75em;
+  border: 1px solid currentColor;
+  border-color: color-mix(in srgb, currentColor 25%, transparent);
+  vertical-align: top;
+}
+
+table:has(> tbody > tr > td > p, > tbody > tr > th > p) :is(td, th) > p {
+  margin: 0;
+}

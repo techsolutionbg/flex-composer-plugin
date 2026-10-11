@@ -1,0 +1,27 @@
+{
+  "name": "flex-composer-app",
+  "private": true,
+  "type": "module",
+  "description": "Source of the Flex Composer editor; builds ../assets/composer.js and ../assets/composer.css.",
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@blocknote/ariakit": "0.55.0",
+    "@blocknote/core": "0.55.0",
+    "@blocknote/react": "0.55.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "5.2.0",
+    "jsdom": "^30.1.2",
+    "typescript": "6.0.3",
+    "vite": "8.3.1",
+    "vitest": "^5.0.3"
+  }
+}
