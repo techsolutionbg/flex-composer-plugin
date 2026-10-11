@@ -50,12 +50,14 @@ function host(request: (url: string, method?: string, body?: unknown) => Promise
     time: { parse: () => null },
     useWorkspaceChanged: () => vi.fn(),
     useWorkspaceSaved: () => vi.fn(),
+    usePageHelp: vi.fn(),
     components: {
       Breadcrumbs: () => null,
       Button,
       LoadingButton: ({ loading: _loading, ...props }: Record<string, unknown> & { children?: React.ReactNode }) => Button(props),
       ConfirmDialog: ({ open, title }: { open: boolean; title: string }) => (open ? createElement("div", { role: "dialog" }, title) : null),
       MediaPicker: () => null,
+      Hint: ({ children }: { children?: React.ReactNode }) => createElement("div", { role: "note" }, children),
     },
   }
 }
@@ -85,7 +87,7 @@ describe("createPage", () => {
     expect(container.textContent).toContain("Нищо не се записва, докато не натиснете „Запази“.")
     const save = Array.from(container.querySelectorAll("button")).find((button) => button.textContent === "Записано")!
     expect(save.disabled).toBe(true)
-    expect(container.querySelector("a[href='/za-nas']")).not.toBeNull()
+    expect(Array.from(container.querySelectorAll("button")).some((button) => button.textContent === "Виж на сайта")).toBe(true)
     root.unmount()
   })
 
@@ -112,5 +114,32 @@ describe("createPage without a record", () => {
     Array.from(container.querySelectorAll("button")).find((button) => button.textContent === "Към страниците")!.click()
     expect(navigate).toHaveBeenCalledWith("/pages")
     root.unmount()
+  })
+})
+
+describe("createEditorLink", () => {
+  it("opens saved pages and products in Composer from the classic editors", async () => {
+    const { createEditorLink } = await import("../../assets/admin.js" as string)
+    const Link = createEditorLink(host(vi.fn()))
+    const navigate = vi.fn()
+    const { container, root } = await render(createElement(Link, { context: { type: "product", id: 9 }, navigate }))
+    Array.from(container.querySelectorAll("button")).find((button) => button.textContent === "Отвори в Composer")!.click()
+    expect(navigate).toHaveBeenCalledWith("/extension-pages/flex-composer-product/9/edit")
+    root.unmount()
+    for (const context of [{ type: "page", id: null }, { type: "category", id: 3 }]) {
+      const empty = await render(createElement(Link, { context, navigate }))
+      expect(empty.container.innerHTML).toBe("")
+      empty.root.unmount()
+    }
+  })
+})
+
+describe("guidance", () => {
+  it("describes the blocks each kind of record has", async () => {
+    const { guidance } = await import("../../assets/admin.js" as string)
+    const text = (type: string) => JSON.stringify(guidance(createElement, type))
+    expect(text("page")).toContain("Вграждане")
+    expect(text("product")).not.toContain("Вграждане")
+    expect(text("product")).toContain("Продуктите имат само блокове")
   })
 })

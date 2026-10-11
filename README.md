@@ -24,10 +24,11 @@ Deactivating the plugin removes the Composer screen and the row actions. The con
 ## How it is used
 
 - **Отвори в Composer** in the **Действия** (actions) menu of every page in the pages list and every product in the Flex Commerce products list opens the editor for that record, at `/extension-pages/flex-composer-page/{id}/edit` or `/extension-pages/flex-composer-product/{id}/edit`.
+- **Отвори в Composer** is also in the classic editors: at the top of the **Съдържание** section of the page editor and below the description in the Flex Commerce product editor (saved records only).
 - Composer has no entry in the admin sidebar; its screens are registered as hidden admin pages.
 - New pages and products are still created on their usual screens; Composer edits records that already exist.
 
-The editor screen has **Запази** (also Ctrl+S / ⌘S), **Класически редактор** to open the record's usual edit screen, and **Виж на сайта** for published records. Leaving with unsaved changes asks for confirmation, as on the other admin screens.
+The editor screen has **Запази** (also Ctrl+S / ⌘S), **Класически редактор** to open the record's usual edit screen, and **Виж на сайта** for published records. Leaving with unsaved changes asks for confirmation, as on the other admin screens. Guidance for the editor is in the admin's **Помощ** dialog in the header; the short inline hints follow the user's "show guidance" switch there.
 
 ## Blocks
 

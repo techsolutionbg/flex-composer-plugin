@@ -44,6 +44,9 @@ final class ComposerPlugin implements PluginInterface, BootablePluginInterface, 
         $context->admin?->page('product', 'Composer', 'assets/admin.js', false, ['group' => 'commerce', 'icon' => 'file-text', 'hidden' => true]);
         $context->admin?->extend('pages.list', 'table.row-action', 'open-page', 'assets/admin.js', ['export' => 'createPageAction']);
         $context->admin?->extend('commerce.products.list', 'table.row-action', 'open-product', 'assets/admin.js', ['export' => 'createProductAction']);
+        // "Отвори в Composer" in the classic editors too: above the page content, below the product description.
+        $context->admin?->extend('page.editor.content', 'section.start', 'editor-link-page', 'assets/admin.js', ['export' => 'createEditorLink']);
+        $context->admin?->extend('commerce.product.editor.basic', 'section.end', 'editor-link-product', 'assets/admin.js', ['export' => 'createEditorLink']);
 
         $context->api->listen(EventNames::PAGE_DELETED, static function (ExtensionEventInterface $event): void {
             if ($event instanceof PageEvent && is_int($event->page['id'] ?? null)) {

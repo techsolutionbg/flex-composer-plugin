@@ -185,20 +185,20 @@ export function createPage(host) {
     }
 
     const title = data ? data.record.title || '(без заглавие)' : 'Composer';
+    host.usePageHelp?.({title: 'Работа с Composer', content: guidance(h, type)});
     return h(React.Fragment, null,
       h(Heading, {
         title,
         navigate,
         crumbs: [{label: meta.label, onClick: () => navigate(meta.list)}, {label: title}, {label: 'Composer'}],
       },
-      data?.record.url ? h('a', {className: 'react-action-button composer-secondary', href: data.record.url, target: '_blank', rel: 'noopener'}, 'Виж на сайта') : null,
+      data?.record.url ? h(C.Button, {type: 'button', variant: 'secondary', onClick: () => window.open(data.record.url, '_blank', 'noopener')}, 'Виж на сайта') : null,
       h(C.Button, {type: 'button', variant: 'secondary', onClick: () => navigate(meta.edit(id))}, 'Класически редактор'),
       h(C.LoadingButton, {type: 'button', loading: saving, disabled: !data || !dirty, onClick: () => save(false), title: 'Ctrl+S'}, dirty ? 'Запази' : 'Записано')),
       h(Failure, {message: failure}),
       data?.state === 'changed' ? h('div', {className: 'composer-notice', role: 'status'},
         'Съдържанието е променено в класическия редактор след последния запис в Composer. Блоковете са създадени отново от текущото съдържание.') : null,
-      data?.state === 'new' ? h('div', {className: 'composer-notice', role: 'status'},
-        'Съдържанието е преобразувано в блокове. Елементи, които не могат да станат блокове, са запазени като „HTML код“ без промяна. Нищо не се записва, докато не натиснете „Запази“.') : null,
+      data?.state === 'new' && C.Hint ? h(C.Hint, null, 'Съдържанието е преобразувано в блокове. Елементи, които не могат да станат блокове, са запазени като „HTML код“ без промяна. Нищо не се записва, докато не натиснете „Запази“.') : null,
       !data && !failure ? h('p', {role: 'status'}, 'Зареждане…') : null,
       !data && failure ? h(C.Button, {type: 'button', variant: 'secondary', onClick: () => setAttempt(attempt + 1)}, 'Опитай отново') : null,
       data ? h('div', {className: 'composer-surface' + (type === 'product' ? ' composer-product' : '')}, h('div', {ref: holder})) : null,
@@ -252,5 +252,40 @@ export function createPage(host) {
           h('p', {className: 'composer-intro'}, 'Отворете страница или продукт от „Действия“ → „Отвори в Composer“ в списъка им.'),
           h('div', null,
             h(C.Button, {type: 'button', variant: 'secondary', onClick: () => navigate('/pages')}, 'Към страниците'))));
+  };
+}
+
+/** The guidance for the editor screen, shown in the admin's "Помощ" dialog. */
+export function guidance(h, type) {
+  const items = [
+    'Нов блок: натиснете „/“ в празен ред или „+“ вляво от реда и изберете вида блок.',
+    'Преместване: хванете дръжката ⋮⋮ вляво от блока и го провлачете. От същото меню блокът се изтрива или оцветява.',
+    'Форматиране и връзки: маркирайте текст и използвайте лентата над него.',
+    'Изображения: изберете блок „Изображение“, после „Медия“ → „Избери от медийната библиотека“ или въведете адрес.',
+    type === 'page' ? 'Вграждане: блокът „Вграждане“ съдържа код като [gallery id="1"], който плъгините показват на сайта.' : null,
+    type === 'page' ? 'HTML код: блокът „HTML код“ пази HTML точно както е въведен. В него остава и съдържание, което не може да стане блок.' : null,
+    type === 'product' ? 'Продуктите имат само блокове, които магазинът показва: текст, заглавия, списъци, цитат, код и изображения.' : null,
+    'Запис: „Запази“ или Ctrl+S. Нищо не се записва автоматично, а при излизане с незаписани промени се иска потвърждение.',
+    'При първо отваряне съдържанието се преобразува в блокове. Ако записът бъде променен в класическия редактор, при следващото отваряне блоковете се създават отново от новото съдържание.',
+    'Ако някой запише същия запис, докато го редактирате, записът спира и предлага да запишете върху промените.',
+    '„Възстанови съдържанието отпреди Composer“ връща съдържанието отпреди първия запис тук.',
+  ].filter(Boolean);
+  return h('ul', null, items.map((text, index) => h('li', {key: index}, text)));
+}
+
+/**
+ * "Отвори в Composer" inside the classic page and product editors (a section.start / section.end extension).
+ * Shown only for saved records: Composer edits records that already exist.
+ */
+export function createEditorLink(host) {
+  const h = host.React.createElement;
+  const C = host.components;
+  return function ComposerLink({context, navigate}) {
+    const type = context?.type;
+    const id = Number(context?.id);
+    if ((type !== 'page' && type !== 'product') || !Number.isInteger(id) || id < 1) return null;
+    return h('div', {className: 'composer-editor-link', style: {display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', margin: '0 0 1rem'}},
+      h('span', {style: {color: 'var(--text-secondary)'}}, 'Редактирайте съдържанието с блоковия редактор. Незаписаните промени тук не се пренасят в него.'),
+      h(C.Button, {type: 'button', variant: 'secondary', onClick: () => navigate?.(editorPath(type, id))}, 'Отвори в Composer'));
   };
 }
