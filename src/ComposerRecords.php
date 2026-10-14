@@ -73,7 +73,7 @@ final class ComposerRecords
     }
 
     /** Writes new HTML to the record through its owner. */
-    public function writeHtml(string $type, int $id, string $html): void
+    public function writeHtml(string $type, int $id, string $html, ?string $contentBuilder = 'flex/composer'): void
     {
         $this->assertAvailable($type);
         if ($type === 'page') {
@@ -91,6 +91,7 @@ final class ComposerRecords
                     'status' => (string) $page->getAttribute('status'),
                     'parent_id' => $page->getAttribute('parent_id'),
                     'featured_media_id' => $page->getAttribute('featured_media_id'),
+                    'content_builder' => $contentBuilder,
                 ]);
             } catch (PageValidationFailed $error) {
                 throw new \InvalidArgumentException($error->getMessage(), 422);

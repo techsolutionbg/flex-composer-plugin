@@ -22,6 +22,7 @@ export function parsePath(path) {
 function openAction(type) {
   return {
     label: 'Отвори в Composer',
+    ...(type === 'page' ? {contentBuilder: 'flex/composer'} : {}),
     onSelect(row, helpers) {
       if (row?.id) helpers?.navigate?.(editorPath(type, row.id));
     },
@@ -284,8 +285,10 @@ export function createEditorLink(host) {
     const type = context?.type;
     const id = Number(context?.id);
     if ((type !== 'page' && type !== 'product') || !Number.isInteger(id) || id < 1) return null;
+    const button = h(C.Button, {type: 'button', variant: 'secondary', onClick: () => navigate?.(editorPath(type, id))}, 'Отвори в Composer');
+    if (type === 'page') return button;
     return h('div', {className: 'composer-editor-link', style: {display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', margin: '0 0 1rem'}},
       h('span', {style: {color: 'var(--text-secondary)'}}, 'Редактирайте съдържанието с блоковия редактор. Незаписаните промени тук не се пренасят в него.'),
-      h(C.Button, {type: 'button', variant: 'secondary', onClick: () => navigate?.(editorPath(type, id))}, 'Отвори в Composer'));
+      button);
   };
 }

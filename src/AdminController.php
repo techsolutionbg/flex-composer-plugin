@@ -85,9 +85,8 @@ final readonly class AdminController
             throw new \InvalidArgumentException('Записът е променен на друго място, след като го отворихте. Презаредете или запишете върху промените.', 409);
         }
         $existing = $store->get($type, $id);
-        if ($html !== $record['html']) {
-            $records->writeHtml($type, $id, $html);
-        }
+        // Even an unchanged HTML save selects Composer as the page's active content editor.
+        $records->writeHtml($type, $id, $html);
         $written = $records->get($type, $id)['html'];
         $store->save($type, $id, $body['document'] ?? null, $written, $existing === null ? $record['html'] : null);
 
@@ -101,7 +100,7 @@ final readonly class AdminController
         if ($source === null) {
             throw new \InvalidArgumentException('Няма запазен оригинал за възстановяване.', 404);
         }
-        $records->writeHtml($type, $id, $source);
+        $records->writeHtml($type, $id, $source, PageService::BUILTIN_CONTENT_EDITOR);
         $store->delete($type, $id);
 
         return $this->document($store, $records, $type, $id);

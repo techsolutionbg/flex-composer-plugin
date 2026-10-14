@@ -2,7 +2,7 @@
 
 A block-based visual editor for Flex CMS, built on [BlockNote](https://www.blocknotejs.org/). It edits existing pages and Flex Commerce products on a separate screen, alongside the classic editor, which stays as it is.
 
-Version: **0.1.0** · ID: `flex/composer` · Minimum Flex CMS version: **0.1.61**.
+Version: **0.1.1** · ID: `flex/composer` · Minimum Flex CMS version: **0.1.61**.
 
 GitHub repository: `techsolutionbg/flex-composer-plugin`.
 
@@ -24,7 +24,7 @@ Deactivating the plugin removes the Composer screen and the row actions. The con
 ## How it is used
 
 - **Отвори в Composer** in the **Действия** (actions) menu of every page in the pages list and every product in the Flex Commerce products list opens the editor for that record, at `/extension-pages/flex-composer-page/{id}/edit` or `/extension-pages/flex-composer-product/{id}/edit`.
-- **Отвори в Composer** is also in the classic editors: at the top of the **Съдържание** section of the page editor and below the description in the Flex Commerce product editor (saved records only).
+- **Отвори в Composer** is also below the description in the Flex Commerce product editor (saved records only). For pages, use the action in the pages list.
 - Composer has no entry in the admin sidebar; its screens are registered as hidden admin pages.
 - New pages and products are still created on their usual screens; Composer edits records that already exist.
 

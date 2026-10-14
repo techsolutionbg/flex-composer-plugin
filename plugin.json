@@ -1,7 +1,7 @@
 {
   "id": "flex/composer",
   "name": "Flex Composer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Блоков визуален редактор за страници и продукти на Flex Commerce, на отделен екран, паралелно с класическия редактор.",
   "minimum_platform_version": "0.1.61",
   "entrypoint": "Flex\\Composer\\ComposerPlugin",

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Flex\Composer;
 
 use Flex\Extension\V1\{BootablePluginInterface, EventNames, ExtensionEventInterface, PageEvent, PluginContext, PluginInterface, UninstallablePluginInterface, UpdatablePluginInterface};
+use Flex\Pages\Page;
 
 final class ComposerPlugin implements PluginInterface, BootablePluginInterface, UpdatablePluginInterface, UninstallablePluginInterface
 {
@@ -32,6 +33,7 @@ final class ComposerPlugin implements PluginInterface, BootablePluginInterface, 
 
     public function boot(PluginContext $context): void
     {
+        $this->associateExistingPages();
         foreach (ComposerStore::TYPES as $type) {
             $context->routes?->admin(['GET', 'PUT'], '/documents/' . $type . '/{id:number}', AdminController::class, 'document-' . $type);
             $context->routes?->admin('POST', '/documents/' . $type . '/{id:number}/restore', AdminController::class, 'restore-' . $type);
@@ -44,8 +46,7 @@ final class ComposerPlugin implements PluginInterface, BootablePluginInterface, 
         $context->admin?->page('product', 'Composer', 'assets/admin.js', false, ['group' => 'commerce', 'icon' => 'file-text', 'hidden' => true]);
         $context->admin?->extend('pages.list', 'table.row-action', 'open-page', 'assets/admin.js', ['export' => 'createPageAction']);
         $context->admin?->extend('commerce.products.list', 'table.row-action', 'open-product', 'assets/admin.js', ['export' => 'createProductAction']);
-        // "Отвори в Composer" in the classic editors too: above the page content, below the product description.
-        $context->admin?->extend('page.editor.content', 'section.start', 'editor-link-page', 'assets/admin.js', ['export' => 'createEditorLink']);
+        // "Отвори в Composer" stays available in the pages list; keep the in-section link only for products.
         $context->admin?->extend('commerce.product.editor.basic', 'section.end', 'editor-link-product', 'assets/admin.js', ['export' => 'createEditorLink']);
 
         $context->api->listen(EventNames::PAGE_DELETED, static function (ExtensionEventInterface $event): void {
@@ -58,5 +59,23 @@ final class ComposerPlugin implements PluginInterface, BootablePluginInterface, 
                 (new ComposerStore())->delete('product', $deleted['id']);
             }
         });
+    }
+
+    /** Mark Composer documents created before pages exposed their active content editor. */
+    private function associateExistingPages(): void
+    {
+        $pageIds = (new ComposerStore())->pageIds();
+        if ($pageIds === []) {
+            return;
+        }
+        foreach (Page::query()->whereIn('id', $pageIds)->get() as $page) {
+            $settings = is_array($page->getAttribute('settings')) ? $page->getAttribute('settings') : [];
+            if (isset($settings['content_builder']) && $settings['content_builder'] !== '') {
+                continue;
+            }
+            $settings['content_builder'] = 'flex/composer';
+            $page->setAttribute('settings', $settings);
+            $page->saveOrFail();
+        }
     }
 }

@@ -149,6 +149,15 @@ final class ComposerStore
         $this->db->table('flex_composer_documents')->where('object_type', $type)->where('object_id', $id)->delete();
     }
 
+    /** @return list<int> */
+    public function pageIds(): array
+    {
+        return array_values(array_map('intval', $this->db->table('flex_composer_documents')
+            ->where('object_type', 'page')
+            ->pluck('object_id')
+            ->all()));
+    }
+
     /** Hash of record HTML, normalized for line endings so a CRLF round trip is not a change. */
     public static function hash(string $html): string
     {
